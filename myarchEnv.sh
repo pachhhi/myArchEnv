@@ -34,73 +34,46 @@ else
 	echo -e "${RED} You are offline... :( ${RESET}" exit 1;
 fi
 
-#sudo pacman -Syu --noconfirm
+sudo pacman -Syu --noconfirm
 
 #Make config dir
 echo -e "${GREEN}λ > Creating config dir in ${USER_HOME} ${RESET}"
-#mkdir -p "$USER_HOME/myarchEnvconfig"
+mkdir -p "$USER_HOME/myarchEnvconfig"
 
 #Installing drivers for GPU
-#pacman -S --noconfirm x86-video-amdgpu mesa vulkan-radeon libva-mesa-driver
-
-#Download packages for BSPWM
-function configBSPWM() {
-	
-#	pacman -S --noconfirm xorg-server xorg-xinit xorg-xrandr xorg-xsetroot bspwm sxhkd picom rofi kitty zsh feh lightdm lightdm-gtk-greeter
-#	mkdir -p "$USER_HOME/myarchEnvconfig/.config/{bspwm,sxhkd,picom,kitty,rofi}"	
-	echo -e "${BLUE} > Making config for bspwm ${RESET}"
-}
-configBSPWM
+pacman -S --noconfirm x86-video-amdgpu mesa vulkan-radeon libva-mesa-driver
 
 #Download packages for HYPRLAND
-#pacman -S --noconfirm hyprland waybar wofi xdg-desktop-portal-hyprland wayland wayland-protocols xwayland sddm
-#systemctl enable sddm
+pacman -S --noconfirm hyprland waybar wofi xdg-desktop-portal-hyprland wayland wayland-protocols xwayland sddm
+systemctl enable sddm
 
 #Download packages for KDE
-#pacman -S --noconfirm plasma kde-applications
+pacman -S --noconfirm plasma kde-applications
 
 #Functions
 
 function installAUR() {
 	echo -e "${BLUE}λ > Installing AUR in ${USER_HOME} ${RESET}"
-	#sudo pacman -S --needed base-devel git
-	#git clone https://aur.archlinux.org/yay.git $USER_HOME/myarchEnvconfig
-	#cd $USER_HOME/myarchEnvconfig/yay/
-	#makepkg -si
+	sudo pacman -S --needed base-devel git
+	git clone https://aur.archlinux.org/yay.git $USER_HOME/myarchEnvconfig
+	cd $USER_HOME/myarchEnvconfig/yay/
+	makepkg -si
 	echo -e "${GREEN} > Installed! ${RESET}"
 
 }
 
+function installPackages() {
+	sudo pacman -S zsh picom rofi kitty feh --noconfirm
+
+	mkdir -p "$USER_HOME/myarchEnvconfig/.config/{picom, rofi, kitty}"
+
+	wait
+	yay -S neofetch burpsuite fsearch --noconfirm 
+}
+
 function initInstall() {
-	echo -e "${GREEN} >Do you want make a custom install? (default/custom)${RESET}"
-	read choice
-
-	case $choice in
-		default)
-			echo -e "${GREEN} > Preparing install..${RESET}"
-			
-			configBSPWM
-			wait
-
-			installAUR
-			wait
-
-
-			;;
-		custom)
-			echo -e "${GREEN} > Preparing custom install.. ${RESET}"
-			
-			echo -e "${GREEN} > Do you want install BSPWM? ${RESET}"
-			read bspwm
-			if [ $bspwm == y ]; then
-				echo -e "${GREEN} > Installing BSPWM.. ${RESET}"
-				#configBSPWM
-			fi
-			;;
-		*)
-			echo -e "${RED} > Choice (default) or (custom) ${RESET}"
-			;;
-	esac
+	installAUR
+	installPackages	
 }
 
 initInstall
